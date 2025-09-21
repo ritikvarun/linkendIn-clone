@@ -1,0 +1,115 @@
+
+.Container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.homeContainer {
+  display: flex;
+  width: 100%;
+}
+
+/* Left Sidebar */
+.homeContainer > div:nth-child(1) {
+  flex: 0.2;
+  min-width: 200px;
+  border-right: 1px solid #eee;
+  padding: 1rem 0.5rem;
+}
+
+/* Center Feed */
+.homeContainer > div:nth-child(2) {
+  flex: 0.6;
+  padding: 2rem;
+}
+
+/* Right Sidebar */
+.homeContainer > div:nth-child(3) {
+  flex: 0.2;
+  min-width: 220px;
+  border-left: 1px solid #eee;
+  padding: 1rem;
+}
+
+.homeContainer__leftBar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: start;
+}
+
+.sideBarOption {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  gap: 1rem;
+  width: 90%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.sideBarOption:hover {
+  background: #f5f5f5;
+  transform: scale(1.02);
+}
+.sideBarOption > svg {
+  height: 1.4em;
+}
+
+/* Right Sidebar heading */
+.extraContainer h3 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+@media only screen and (max-width: 600px) {
+  .extraContainer{
+    display: none;
+  }
+  .homeContainer{
+    display: block;
+  }
+  .homeContainer__leftBar{
+    display: none;
+  }
+}
+
+.mobileNavbar{
+  display: none; 
+}
+
+.mobileNavbar svg{
+  height: 2rem;
+  width: 2rem;
+}
+
+/* Mobile-only bottom navbar */
+@media only screen and (max-width: 600px) {
+  .mobileNavbar{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 64px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #ffffff;
+    border-top: 1px solid #eee;
+    z-index: 1000;
+    
+  }
+
+
+  .singleNavItemHolder_mobilView{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+  }
+}
