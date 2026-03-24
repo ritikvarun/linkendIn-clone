@@ -1,0 +1,43 @@
+.container {
+  padding: 1.7rem;
+}
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navBarOptionContainer {
+  display: flex;
+}
+.buttonJoin {
+  cursor: pointer;
+  background-color: #cd8987;
+  font-weight: bold;
+  font-size: 0.7rem;
+  color: white;
+  padding-inline: 1.2rem;
+  padding-block: 0.6rem;
+  border-radius: 10px;
+}
+/* Mobile (<=600px) */
+@media (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .navBar {
+    flex-wrap: wrap;
+    row-gap: 0.8rem;
+  }
+
+  .navBarOptionContainer {
+    gap: 0.8rem;
+    align-items: center;
+  }
+
+  .buttonJoin {
+    font-size: 0.85rem;
+    padding-inline: 1rem;
+    padding-block: 0.7rem;
+  }
+}

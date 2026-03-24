@@ -1,0 +1,36 @@
+.userCard {
+  display: flex;
+  width: 100%;
+  gap: 1.2rem;
+  padding: 1.3rem;
+  align-items: center;
+  box-shadow: 10px 10px 10px 0px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+.profilePicture > img {
+  width: 6.5rem;
+  border-radius: 50%;
+}
+.btn{
+    background-color: #e8f3ff; 
+    color: #0a66c2;
+    border: 1px solid #b3d4ff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease,
+      box-shadow 0.2s ease;
+}
+.btn:hover{
+    background-color: #d9ebff;
+    box-shadow: 0 2px 6px rgba(10, 102, 194, 0.15);
+}
+/* .myConnections {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  padding-bottom: 1.5rem;
+  cursor: pointer;
+  background-color: blue;
+} */

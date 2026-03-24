@@ -1,0 +1,179 @@
+.discoverContainer {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.discoverTitle {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+  padding: 40px;
+}
+
+.usersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  padding: 20px ;
+  justify-content: center; 
+  justify-items: center; 
+}
+
+.userCard {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e1e5e9;
+  width: 100%;
+  max-width: 420px; /* keep a pleasant max width so centering looks correct */
+}
+
+.userCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.profileImageContainer {
+  margin-bottom: 20px;
+}
+
+.profileImage {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #0077b5;
+  transition: transform 0.3s ease;
+}
+
+.profileImage:hover {
+  transform: scale(1.05);
+}
+
+.userInfo {
+  margin-bottom: 20px;
+}
+
+.userName {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.userUsername {
+  color: #666;
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.userBio {
+  color: #555;
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  min-height: 40px;
+}
+
+.userEmail {
+  color: #888;
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+}
+
+.userPosition {
+  color: #0077b5;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.noUsers {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .usersGrid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 2rem ;
+    justify-content: center;
+    justify-items: center;
+  }
+
+  .userCard {
+    padding: 20px;
+  }
+
+  .profileImage {
+    width: 80px;
+    height: 80px;
+  }
+
+  .userName {
+    font-size: 1.2rem;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .discoverContainer {
+    padding: 16px;
+  }
+
+  .usersGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    justify-content: center;
+    justify-items: center;
+  }
+
+  .userCard {
+    padding: 18px;
+  }
+
+  .profileImage {
+    width: 72px;
+    height: 72px;
+  }
+
+  .userName {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .discoverContainer {
+    padding: 12px; /* keep equal spacing without shifting content */
+  }
+
+  .discoverTitle {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  .usersGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    justify-content: center;
+    justify-items: center;
+  }
+}
