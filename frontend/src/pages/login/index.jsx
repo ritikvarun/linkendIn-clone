@@ -46,9 +46,11 @@ const LoginComponent = () => {
               <p className={style.cardLeft_heading}>
                 {userLoginMethod ? "Sign In " : "Sign Up"}
               </p>
-              <p style={{ color: authState.isError ? "red" : "green" }}>
-                {authState.message.message}
-              </p>
+              {authState.message ? (
+                <p className={authState.isError ? style.errorMessage : style.successMessage}>
+                  {typeof authState.message === "string" ? authState.message : authState.message.message}
+                </p>
+              ) : null}
 
               <div className={style.inputContainer}>
                 {!userLoginMethod && (
@@ -81,6 +83,7 @@ const LoginComponent = () => {
                 />
 
                 <button
+                  disabled={authState.isLoading}
                   onClick={() => {
                     if (userLoginMethod) {
                       handleLogin();
@@ -90,22 +93,22 @@ const LoginComponent = () => {
                   }}
                   className={style.buttonWithOutline}
                 >
-                  {userLoginMethod ? "Sign In " : "Sign Up"}
+                  {authState.isLoading ? "Loading..." : (userLoginMethod ? "Sign In " : "Sign Up")}
                 </button>
               </div>
             </div>
             <div className={style.cardContainer_right}>
               <div>
                 {userLoginMethod ? (
-                  <p>Don't Have an Account ?</p>
+                  <p className={style.cardContainer_rightText}>Don't Have an Account ?</p>
                 ) : (
-                  <p>Already Have an Account ?</p>
+                  <p className={style.cardContainer_rightText}>Already Have an Account ?</p>
                 )}
                 <button
                   onClick={() => {
                     setUserLoginMethod(!userLoginMethod);
                   }}
-                  className={style.buttonWithOutline}
+                  className={style.cardContainer_rightButton}
                 >
                   {userLoginMethod ? "Sign Up " : "Sign In"}
                 </button>

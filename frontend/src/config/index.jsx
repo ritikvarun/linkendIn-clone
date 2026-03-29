@@ -4,4 +4,5 @@ const clintServer = axios.create({
   baseURL: BASE_URL,
 });
 
+
 export default clintServer;

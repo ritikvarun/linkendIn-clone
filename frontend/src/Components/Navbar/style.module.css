@@ -1,43 +1,113 @@
 .container {
-  padding: 1.7rem;
+  padding: 0 1.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 64px;
+  display: flex;
+  align-items: center;
 }
+
 .navBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
 }
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0a66c2; /* LinkedIn Blue */
+  margin: 0;
+  cursor: pointer;
+  letter-spacing: -0.5px;
+}
+
 .navBarOptionContainer {
   display: flex;
+  align-items: center;
 }
+
+.navLinks {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.welcomeText {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.navLink {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1a1a1a;
+  cursor: pointer;
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  color: #0a66c2;
+}
+
+.logoutLink {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #d11124;
+  cursor: pointer;
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.logoutLink:hover {
+  color: #a40b19;
+}
+
 .buttonJoin {
   cursor: pointer;
-  background-color: #cd8987;
-  font-weight: bold;
-  font-size: 0.7rem;
+  background-color: #0a66c2;
+  font-weight: 600;
+  font-size: 0.95rem;
   color: white;
-  padding-inline: 1.2rem;
-  padding-block: 0.6rem;
-  border-radius: 10px;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
 }
+
+.buttonJoin:hover {
+  background-color: #004182;
+}
+
+.buttonJoin p {
+  margin: 0;
+}
+
 /* Mobile (<=600px) */
 @media (max-width: 600px) {
   .container {
-    padding: 1rem;
+    padding: 0 1rem;
+    height: 56px;
   }
 
-  .navBar {
-    flex-wrap: wrap;
-    row-gap: 0.8rem;
+  .logo {
+    font-size: 1.2rem;
   }
 
-  .navBarOptionContainer {
-    gap: 0.8rem;
-    align-items: center;
+  .welcomeText {
+    display: none; /* Hide hey name on mobile to save space */
   }
 
-  .buttonJoin {
-    font-size: 0.85rem;
-    padding-inline: 1rem;
-    padding-block: 0.7rem;
+  .navLinks {
+    gap: 1rem;
   }
 }

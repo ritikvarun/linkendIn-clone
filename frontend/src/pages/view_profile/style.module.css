@@ -1,163 +1,253 @@
 .container {
- display: flex;
- flex-direction: column;
- gap: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 5rem;
+  max-width: 1000px;
+  margin: 0 auto;
 }
+
 .backDropContainer {
   width: 100%;
-  height: 30vh;
-  background: url("https://images.pexels.com/photos/906150/pexels-photo-906150.jpeg?_gl=1*19p7kc1*_ga*MTk4MzE2NTY4Ni4xNzU3MjIyMDQ3*_ga_8JE65Q40S6*czE3NTcyMjIwNDckbzEkZzEkdDE3NTcyMjIwNzYkajMxJGwwJGgw");
+  height: 240px;
+  background: url("https://images.pexels.com/photos/906150/pexels-photo-906150.jpeg");
   background-size: cover;
-  background-repeat: no-repeat;
-  position: relative;
   background-position: center;
-  border-radius: 4px;
+  border-radius: 12px 12px 0 0;
+  position: relative;
 }
-/* Profile avatar on the banner */
+
 .backDrop {
-  width: 10vw;
-  min-width: 80px;
-  max-width: 140px;
-  aspect-ratio: 1 / 1;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
   position: absolute;
-  bottom: -30%;
-  left: 8%;
-  text-align: center;
-  border: 3px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  background-color: #fff;
+  bottom: -70px;
+  left: 30px;
+  border: 4px solid white;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 .profileContainer_details {
-  padding-top: 6.6rem;
+  background: white;
+  border-radius: 0 0 12px 12px;
+  padding: 85px 30px 30px 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e1e8ed;
 }
-.postCard {
-  padding: 10px 0;
-  border-bottom: 1px solid #e9ecef;
-}
-.card {
+
+.profileGrid {
   display: flex;
-  align-items: center;
-  gap: 1.4rem;
-  padding: 10px 0;
-}
-.card_profileContainer {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #f5f5f5;
+  gap: 2rem;
 }
 
-.card_profileContainer img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.profileLeft {
+  flex: 0.7;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.card p {
+.userName {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
   margin: 0;
+}
+
+.usernameText {
+  color: #657786;
+  font-size: 1rem;
+  margin: 0.2rem 0 0 0;
+}
+
+.userBio {
+  font-size: 1rem;
+  line-height: 1.5;
   color: #333;
-  line-height: 1.4;
+  margin: 0;
 }
 
-@media (max-width: 768px) {
-  .card {
-    gap: 1rem;
-  }
-  .card_profileContainer {
-    width: 56px;
-    height: 56px;
-  }
+.actionsContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 0.5rem;
 }
 
-/* Light blue connect button */
 .connectButton {
-  background-color: #e8f3ff; 
-  color: #0a66c2;
-  border: 1px solid #b3d4ff;
-  padding: 8px 16px;
+  background-color: #0077b5;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
   border-radius: 20px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease,
-    box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
 }
 
 .connectButton:hover {
-  background-color: #d9ebff;
-  box-shadow: 0 2px 6px rgba(10, 102, 194, 0.15);
+  background-color: #004182;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 119, 181, 0.3);
 }
 
-.connectButton:active {
-  transform: translateY(1px);
+.pendingButton {
+  background-color: #f3f2ef;
+  color: #666;
+  border: 1px solid #dcdcdc;
+  padding: 0.6rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: default;
 }
 
-
-.workHistoryContainer{
+.downloadIcon {
+  width: 36px;
+  height: 36px;
   display: flex;
-  gap: 1.4rem;
-  padding-top: 1.4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f3f2ef;
+  color: #0077b5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.downloadIcon:hover {
+  background: #e1e8ed;
+  transform: scale(1.05);
+}
+
+.profileRight {
+  flex: 0.3;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.recentActivityTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.postCard {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e1e8ed;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.card_profileContainer {
   width: 100%;
+  height: 120px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e1e8ed;
+}
+
+.postThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardText {
+  margin: 0;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.workHistory {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e1e8ed;
+}
+
+.workHistoryTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1.2rem;
+  margin-top: 0;
+}
+
+.workHistoryContainer {
+  display: flex;
+  gap: 1rem;
   flex-wrap: wrap;
 }
-.workHistoryCard{
-  min-width: fit-content;
-  padding-inline: 2.5rem;
-  padding-block: 1rem;
-  border-radius: 10px;
-  box-shadow: 10px 10px 15px rgb(173, 173, 173);
+
+.workHistoryCard {
+  background: #f8fafc;
+  border: 1px solid #e1e8ed;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.workRole {
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.workYears {
+  color: #657786;
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 /* Mobile adjustments */
+@media (max-width: 768px) {
+  .profileGrid {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 600px) {
   .container {
-    gap: 1rem;
+    padding-bottom: 80px;
   }
-
   .backDropContainer {
-    height: 22vh;
+    height: 160px;
     border-radius: 0;
   }
-
   .backDrop {
-    width: 72px;
-    bottom: -36px;
-    left: 16px;
+    width: 100px;
+    height: 100px;
+    bottom: -50px;
+    left: 20px;
   }
-
   .profileContainer_details {
-    padding-top: 4.5rem;
+    padding: 65px 20px 20px 20px;
+    border-radius: 0;
   }
-
-  .card {
-    gap: 0.8rem;
+  .userName {
+    font-size: 1.4rem;
   }
-
-  .card_profileContainer {
-    width: 48px;
-    height: 48px;
-  }
-
-  .card p {
-    font-size: 0.95rem;
-  }
-
-  .connectButton {
-    padding: 6px 12px;
-    font-size: 0.9rem;
-  }
-
-  .workHistoryContainer{
-    gap: 0.8rem;
-  }
-
-  .workHistoryCard{
-    padding-inline: 1rem;
-    padding-block: 0.8rem;
-    box-shadow: 6px 6px 12px rgb(200, 200, 200);
+  .workHistory {
+    padding: 1.2rem;
+    border-radius: 0;
   }
 }

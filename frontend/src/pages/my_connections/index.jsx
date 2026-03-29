@@ -53,12 +53,10 @@ const MyConnectionPage = () => {
   return (
     <UserLayout>
       <DashboardLayout>
-        <h4>My Connections</h4>
-        <div
-          style={{ display: "flex", flexDirection: "column", gap: "1.7rem" }}
-        >
+        <h2 className={style.pageTitle}>My Connections</h2>
+        <div className={style.cardsContainer}>
           {pendingRequests.length === 0 && (
-            <h1>No Connection Request Pending</h1>
+            <p className={style.noRequestText}>No Connection Request Pending</p>
           )}
           {pendingRequests.length !== 0 &&
             pendingRequests.map((user, index) => {
@@ -70,22 +68,17 @@ const MyConnectionPage = () => {
                   className={style.userCard}
                   key={index}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1.2rem",
-                    }}
-                  >
+                  <div className={style.cardInner}>
                     <div className={style.profilePicture}>
                       <img
+                        className={style.profileImage}
                         src={`${BASE_URL}/${user.userId.profilePicture}`}
                         alt="connectionImage"
                       />
                     </div>
                     <div className={style.userInfo}>
-                      <h3>{user.userId?.name}</h3>
-                      <p>{user.userId?.username}</p>
+                      <h3 className={style.userName}>{user.userId?.name}</h3>
+                      <p className={style.userUsername}>{user.userId?.username}</p>
                     </div>
                     <button
                       onClick={(e) => {
@@ -106,7 +99,7 @@ const MyConnectionPage = () => {
                 </div>
               );
             })}
-          <h4>My Network</h4>
+          <h3 className={style.sectionTitle}>My Network</h3>
           {acceptedNetwork.map((item, index) => {
               const displayUser = item.userId || item.connectionId;
               return (
@@ -117,22 +110,17 @@ const MyConnectionPage = () => {
                   className={style.userCard}
                   key={index}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1.2rem",
-                    }}
-                  >
+                  <div className={style.cardInner}>
                     <div className={style.profilePicture}>
                       <img
+                        className={style.profileImage}
                         src={`${BASE_URL}/${displayUser.profilePicture}`}
                         alt="connectionImage"
                       />
                     </div>
                     <div className={style.userInfo}>
-                      <h3>{displayUser?.name}</h3>
-                      <p>{displayUser?.username}</p>
+                      <h3 className={style.userName}>{displayUser?.name}</h3>
+                      <p className={style.userUsername}>{displayUser?.username}</p>
                     </div>
                   </div>
                 </div>

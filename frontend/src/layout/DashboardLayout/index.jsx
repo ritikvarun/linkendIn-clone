@@ -36,7 +36,7 @@ const DashboardLayout = ({ children }) => {
     <div className={styles.Container}>
       <div className={styles.homeContainer}>
         {/* LEFT SIDEBAR */}
-        <div>
+        <div className={styles.leftSidebar}>
           <div className={styles.homeContainer__leftBar}>
             {/* Scroll */}
             <Link href="/dashboard" legacyBehavior>
@@ -117,39 +117,32 @@ const DashboardLayout = ({ children }) => {
 
         {/* RIGHT SIDEBAR */}
         <div className={styles.extraContainer}>
-          <h3>Top Profiles</h3>
-          {authState.allUsersFetched && authState.allUsers ? (
-            authState.allUsers
-              .filter((user) => user.userId) // Only show profiles with valid userId
-              .slice(0, 5) // Show only top 5 profiles
-              .map((profile) => (
-                <div
-                  key={profile._id}
-                  style={{
-                    marginBottom: "10px",
-                    padding: "8px",
-                    border: "1px solid #eee",
-                    borderRadius: "4px",
-                  }}
-                >
-                  <p style={{ fontWeight: "bold", margin: "0" }}>
-                    {profile.userId?.name || "Unknown User"}
-                  </p>
-                  <p
-                    style={{ margin: "2px 0", fontSize: "12px", color: "#666" }}
+          <div className={styles.rightBlock}>
+            <h3>Top Profiles</h3>
+            {authState.allUsersFetched && authState.allUsers ? (
+              authState.allUsers
+                .filter((user) => user.userId) // Only show profiles with valid userId
+                .slice(0, 5) // Show only top 5 profiles
+                .map((profile) => (
+                  <div
+                    key={profile._id}
+                    className={styles.profileItem}
                   >
-                    {profile.userId?.username || "N/A"}
-                  </p>
-                  <p
-                    style={{ margin: "2px 0", fontSize: "12px", color: "#666" }}
-                  >
-                    {profile.currentPost || "No position"}
-                  </p>
-                </div>
-              ))
-          ) : (
-            <p>Loading profiles...</p>
-          )}
+                    <p className={styles.profileItemName}>
+                      {profile.userId?.name || "Unknown User"}
+                    </p>
+                    <p className={styles.profileItemUsername}>
+                      {profile.userId?.username || "N/A"}
+                    </p>
+                    <p className={styles.profileItemPosition}>
+                      {profile.currentPost || "No position"}
+                    </p>
+                  </div>
+                ))
+            ) : (
+              <p className={styles.loadingText}>Loading profiles...</p>
+            )}
+          </div>
         </div>
       </div>
       <div className={styles.mobileNavbar}>

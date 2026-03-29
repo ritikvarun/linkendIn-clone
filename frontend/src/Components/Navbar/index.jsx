@@ -11,7 +11,7 @@ const Navbar = () => {
     <div className={style.container}>
       <div className={style.navBar}>
         <h2
-          style={{ cursor: "pointer" }}
+          className={style.logo}
           onClick={() => {
             router.push("/");
           }}
@@ -20,13 +20,13 @@ const Navbar = () => {
         </h2>
         <div className={style.navBarOptionContainer}>
           {authState.profileFetched && (
-            <div style={{ display: "flex", gap: "1.2rem" }}>
-              <p>Hey, {authState.user?.userId?.name}</p>
+            <div className={style.navLinks}>
+              <p className={style.welcomeText}>Hey, {authState.user?.userId?.name}</p>
               <p
                 onClick={() => {
                   router.push("/profile");
                 }}
-                style={{ fontWeight: "bold", cursor: "pointer" }}
+                className={style.navLink}
               >
                 Profile
               </p>
@@ -36,7 +36,7 @@ const Navbar = () => {
                   dispatch(reset());
                   router.push("/login");
                 }}
-                style={{ fontWeight: "bold", cursor: "pointer", color: "red" }}
+                className={style.logoutLink}
               >
                 Logout
               </p>

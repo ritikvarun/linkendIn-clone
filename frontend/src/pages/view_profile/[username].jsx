@@ -101,31 +101,18 @@ const ViewProfilePage = ({ userProfile }) => {
               />
             </div>
             <div className={style.profileContainer_details}>
-              <div style={{ display: "flex", gap: "0.7rem" }}>
-                <div style={{ flex: 0.8 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      width: "fit-content",
-                      alignItems: "center",
-                      gap: "1.2rem",
-                    }}
-                  >
-                    <h2>{userProfile?.userId?.name || "Unknown User"}</h2>
-                    <p style={{ color: "gray" }}>
+              <div className={style.profileGrid}>
+                <div className={style.profileLeft}>
+                  <div>
+                    <h2 className={style.userName}>{userProfile?.userId?.name || "Unknown User"}</h2>
+                    <p className={style.usernameText}>
                       @{userProfile?.userId?.username || "unknown"}
                     </p>
                   </div>
                   <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "1rem",
-                        alignItems: "center",
-                      }}
-                    >
+                    <div className={style.actionsContainer}>
                       {isCurrentUserInConnection ? (
-                        <button className={style.connectButton}>
+                        <button className={isConnectionNull ? style.pendingButton : style.connectButton}>
                           {isConnectionNull ? "Pending" : "Connected"}
                         </button>
                       ) : (
@@ -146,6 +133,7 @@ const ViewProfilePage = ({ userProfile }) => {
                             Connect
                           </button>
                           <div
+                            className={style.downloadIcon}
                             onClick={async () => {
                               const response = await clintServer.get(
                                 `/user/download_resume?id=${userProfile.userId._id}`
@@ -178,25 +166,26 @@ const ViewProfilePage = ({ userProfile }) => {
                     </div>
 
                     <div>
-                      <p>{userProfile?.bio || ""}</p>
+                      <p className={style.userBio}>{userProfile?.bio || ""}</p>
                     </div>
                   </div>
                 </div>
-                <div style={{ flex: 0.2 }}>
-                  <h3>Recent Activity</h3>
+                <div className={style.profileRight}>
+                  <h3 className={style.recentActivityTitle}>Recent Activity</h3>
                   {userPosts.map((post) => {
                     return (
                       <div key={post._id} className={style.postCard}>
                         <div className={style.card}>
-                          <div className={style.card_profileContainer}>
-                            {post.media !== "" && (
+                          {post.media && post.media !== "" && (
+                            <div className={style.card_profileContainer}>
                               <img
+                                className={style.postThumb}
                                 src={`${BASE_URL}/${post.media}`}
                                 alt="image"
                               />
-                            )}
-                          </div>
-                          <p>{post.body}</p>
+                            </div>
+                          )}
+                          <p className={style.cardText}>{post.body}</p>
                         </div>
                       </div>
                     );
@@ -205,22 +194,15 @@ const ViewProfilePage = ({ userProfile }) => {
               </div>
             </div>
             <div className={style.workHistory}>
-              <h4>Work History</h4>
+              <h4 className={style.workHistoryTitle}>Work History</h4>
               <div className={style.workHistoryContainer}>
                 {userProfile.pastWork.map((work, index) => {
                   return (
                     <div key={index} className={style.workHistoryCard}>
-                      <p
-                        style={{
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.8rem",
-                        }}
-                      >
+                      <p className={style.workRole}>
                         {work.company} - {work.position}
                       </p>
-                      <p>{work.years}</p>
+                      <p className={style.workYears}>{work.years} Years</p>
                     </div>
                   );
                 })}

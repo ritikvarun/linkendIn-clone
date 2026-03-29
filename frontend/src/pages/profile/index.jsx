@@ -100,6 +100,7 @@ const index = () => {
                 id="profilePictureUpload"
               />
               <img
+                className={style.profileImage}
                 src={`${BASE_URL}/${
                   userProfile?.userId?.profilePicture || "default.jpg"
                 }`}
@@ -107,17 +108,9 @@ const index = () => {
               />
             </div>
             <div className={style.profileContainer_details}>
-              <div style={{ display: "flex", gap: "0.7rem" }}>
-                <div style={{ flex: 0.8 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "fit-content",
-                      
-                      gap: "1.2rem",
-                    }}
-                  >
+              <div className={style.profileGrid}>
+                <div className={style.profileLeft}>
+                  <div>
                     <input
                       className={style.nameEdit}
                       type="text"
@@ -132,46 +125,45 @@ const index = () => {
                         });
                       }}
                     />
-
-                    <p style={{ color: "gray",paddingLeft:"0.5rem" }}>
+                    <p className={style.usernameText}>
                       @{userProfile?.userId?.username || "unknown"}
                     </p>
                   </div>
                   <div>
-                    <div>
-                      <textarea
-                        style={{ width: "100%" }}
-                        value={userProfile.bio || ""}
-                        rows={Math.max(
-                          2,
-                          Math.ceil((userProfile?.bio?.length || 0) / 80)
-                        )}
-                        onChange={(e) => {
-                          setUserProfile({
-                            ...userProfile,
-                            bio: e.target.value,
-                          });
-                        }}
-                      />
-                    </div>
+                    <textarea
+                      className={style.bioInput}
+                      value={userProfile.bio || ""}
+                      rows={Math.max(
+                        3,
+                        Math.ceil((userProfile?.bio?.length || 0) / 80)
+                      )}
+                      onChange={(e) => {
+                        setUserProfile({
+                          ...userProfile,
+                          bio: e.target.value,
+                        });
+                      }}
+                      placeholder="Add a bio..."
+                    />
                   </div>
                 </div>
 
-                <div style={{ flex: 0.2 }}>
-                  <h3>Recent Activity</h3>
+                <div className={style.profileRight}>
+                  <h3 className={style.recentActivityTitle}>Recent Activity</h3>
                   {userPosts.map((post) => {
                     return (
                       <div key={post._id} className={style.postCard}>
                         <div className={style.card}>
-                          <div className={style.card_profileContainer}>
-                            {post.media !== "" && (
+                          {post.media && post.media !== "" && (
+                            <div className={style.card_profileContainer}>
                               <img
+                                className={style.postThumb}
                                 src={`${BASE_URL}/${post.media}`}
                                 alt="image"
                               />
-                            )}
-                          </div>
-                          <p>{post.body}</p>
+                            </div>
+                          )}
+                          <p className={style.cardText}>{post.body}</p>
                         </div>
                       </div>
                     );
@@ -180,22 +172,15 @@ const index = () => {
               </div>
             </div>
             <div className={style.workHistory}>
-              <h4>Work History</h4>
+              <h4 className={style.workHistoryTitle}>Work History</h4>
               <div className={style.workHistoryContainer}>
                 {(userProfile?.pastWork || []).map((work, index) => {
                   return (
                     <div key={index} className={style.workHistoryCard}>
-                      <p
-                        style={{
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.8rem",
-                        }}
-                      >
+                      <p className={style.workRole}>
                         {work.company} - {work.position}
                       </p>
-                      <p>{work.years}</p>
+                      <p className={style.workYears}>{work.years} Years</p>
                     </div>
                   );
                 })}

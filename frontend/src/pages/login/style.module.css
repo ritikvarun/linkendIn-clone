@@ -1,116 +1,211 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 .container {
   display: flex;
   justify-content: center;
-  height: 90vh;
   align-items: center;
-  background-color: snow;
-}
-.cardContainer {
-  height: 80vh;
-  display: flex;
-  border-radius: 10px;
-  overflow: hidden;
-  width: 80vw;
-  box-shadow: 10px 10px 15px rgb(173, 173, 173);
-  background-color: white;
-}
-.cardContainer_left {
-  flex: 0.6;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+  font-family: 'Inter', sans-serif;
   padding: 2rem;
+  box-sizing: border-box;
+}
+
+.cardContainer {
+  display: flex;
+  width: 100%;
+  max-width: 900px;
+  min-height: 550px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.cardContainer:hover {
+  transform: translateY(-5px);
+}
+
+.cardContainer_left {
+  flex: 0.55;
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cardLeft_heading {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
   text-align: center;
 }
-.cardLeft_heading {
-  font-size: 1.8rem;
-  font-weight: bold;
-}
+
 .inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.inputRow {
+  display: flex;
+  gap: 1.2rem;
+  width: 100%;
+}
+
+.inputField {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #2d3748;
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.inputField:focus {
+  border-color: #3182ce;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+.cardContainer_right {
+  flex: 0.45;
+  background: linear-gradient(135deg, #0077b5 0%, #004182 100%);
+  color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 1.3rem;
-  max-width: 400px;
-  margin: 0 auto;
-  gap: 1.2rem;
-
-}
-.inputRow{
-  width: fit-content;
-  display: flex;
-  gap: 1.2rem;
-}
-.inputField {
-  padding-inline: 1.3rem;
-  padding-block: 0.8rem;
-  outline: none;
-  border-radius: 10px;
-  border: 1px solid silver;
-  width: 100%;
+  padding: 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.cardContainer_right {
-  flex: 0.4;
-  background: #014584bb;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Add a subtle design element to the right side */
+.cardContainer_right::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  pointer-events: none;
 }
-.buttonWithOutline{
-  padding: 0.8rem 1.3rem;
-  background-color: silver;
+
+.cardContainer_rightText {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  z-index: 1;
+}
+
+.buttonWithOutline {
   width: 100%;
-  border-radius: 10px;
+  padding: 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #ffffff;
+  background: #3182ce;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1;
 }
 
-/* Mobile layout: 600px and below */
-@media (max-width: 600px) {
+.buttonWithOutline:hover {
+  background: #2b6cb0;
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+  transform: translateY(-2px);
+}
+
+.buttonWithOutline:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary button on the right side */
+.cardContainer_rightButton {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  width: 100%;
+  padding: 0.9rem;
+  font-size: 1.05rem;
+  font-family: inherit;
+  color: #ffffff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.cardContainer_rightButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
+/* Status message styling */
+.errorMessage {
+  background: #fed7d7;
+  color: #c53030 !important;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.successMessage {
+  background: #c6f6d5;
+  color: #276749 !important;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .container {
-    height: auto;
-    min-height: 100vh;
-    padding: 16px 0;
+    padding: 1rem;
+    align-items: center;
   }
 
   .cardContainer {
     flex-direction: column;
-    width: 95vw;
-    height: auto;
+    max-width: 100%;
+    min-height: auto;
+    border-radius: 16px;
   }
 
   .cardContainer_left {
-    padding: 1.2rem;
-    text-align: left;
-  }
-
-  .cardLeft_heading {
-    font-size: 1.5rem;
-  }
-
-  .inputContainer {
-    max-width: 100%;
-    padding-top: 1rem;
-    gap: 0.9rem;
-  }
-
-  .inputRow{
-    width: 100%;
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-
-  .inputField {
-    font-size: 1rem;
-  }
-
-  .buttonWithOutline{
-    width: 100%;
+    padding: 2.5rem 1.5rem;
+    order: 1;
   }
 
   .cardContainer_right {
-    order: 2; /* place after form section */
-    height: 140px;
-    padding: 1rem;
-    text-align: center;
+    padding: 3rem 1.5rem;
+    order: 2;
+  }
+
+  .inputRow {
+    flex-direction: column;
+    gap: 1.2rem;
   }
 }
