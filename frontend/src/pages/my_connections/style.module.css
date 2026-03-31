@@ -103,21 +103,15 @@
 }
 
 @media (max-width: 600px) {
-  .userCard {
-    padding: 1rem;
-  }
-  
-  .cardInner {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
+  .userCard { padding: 1rem; }
+  .cardInner { flex-wrap: wrap; gap: 0.8rem; }
+  .profileImage { width: 55px; height: 55px; }
+  .userName { font-size: 0.95rem; }
+  .userUsername { font-size: 0.82rem; }
+  .btn { padding: 0.5rem 1.1rem; font-size: 0.85rem; }
+}
 
-  .userInfo {
-    min-width: 120px;
-  }
-  
-  .profileImage {
-    width: 60px;
-    height: 60px;
-  }
+@media (max-width: 380px) {
+  .cardInner { flex-direction: column; align-items: flex-start; }
+  .btn { width: 100%; text-align: center; }
 }

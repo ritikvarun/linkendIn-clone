@@ -36,11 +36,11 @@ const Discoverpage = () => {
               {authState.allUsers && authState.allUsers.length > 0 ? (
                 // Remove duplicate users based on userId and filter out null userIds
                 authState.allUsers
-                  .filter((profile) => profile.userId && profile.userId._id) // Filter out null userIds
+                  .filter((profile) => profile.userId && profile.userId._id) // Filter null
+                  .filter((profile) => String(profile.userId._id) !== String(authState.user?.userId?._id)) // Filter self
                   .filter(
                     (profile, index, self) =>
-                      index ===
-                      self.findIndex((p) => p.userId._id === profile.userId._id)
+                      index === self.findIndex((p) => p.userId._id === profile.userId._id)
                   )
                   .map((profile, index) => (
                     <div
