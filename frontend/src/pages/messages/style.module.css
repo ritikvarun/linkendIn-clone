@@ -326,10 +326,16 @@
   color: #1a1a1a;
 }
 
+.messageMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
 .messageTime {
   font-size: 0.65rem;
   display: block;
-  text-align: right;
 }
 
 .myMessage .messageTime {
@@ -338,6 +344,18 @@
 
 .theirMessage .messageTime {
   color: #aaa;
+}
+
+.seenTick {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.seenBlue {
+  color: #90cdf4;  /* light blue when seen */
+  font-weight: 600;
 }
 
 /* Pending (optimistic) message */
