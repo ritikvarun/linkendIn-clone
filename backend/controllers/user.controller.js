@@ -7,6 +7,7 @@ import crypto from "crypto";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import ConnectionRequest from "../models/connection.model.js";
+import { emitToUser } from "../socket.service.js";
 
 const convertUserDataTOPDF = async (userData) => {
   const doc = new PDFDocument();
@@ -197,9 +198,14 @@ export const sendConnetionRequest = async (req, res) => {
       connectionId: connectionUser._id,
     });
     await request.save();
-    return res
-      .status(200)
-      .json({ message: "Request sent", requestId: request._id });
+
+    // Real-time notification to receiver
+    emitToUser(connectionUser._id, "newConnectionRequest", {
+      from: { name: user.name, profilePicture: user.profilePicture, _id: user._id },
+      message: `${user.name} ne aapko connection request bheji hai!`,
+    });
+
+    return res.status(200).json({ message: "Request sent", requestId: request._id });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

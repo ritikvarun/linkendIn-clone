@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./style.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -9,22 +9,68 @@ import {
   getConnectionsRequest,
   getMyConnectionsRequests,
 } from "@/config/redux/action/authAction";
+import { io } from "socket.io-client";
+import { BASE_URL } from "@/config";
 
 const DashboardLayout = ({ children }) => {
   const authState = useSelector((state) => state.auth);
-
   const router = useRouter();
   const dispatch = useDispatch();
+  const socketRef = useRef(null);
+
+  // Notification state
+  const [toast, setToast] = useState(null);   // { msg, type, icon }
+  const [msgBadge, setMsgBadge] = useState(0);
+  const [connBadge, setConnBadge] = useState(0);
+
+  const showToast = (msg, type = "message", icon = "💬") => {
+    setToast({ msg, type, icon });
+    setTimeout(() => setToast(null), 5000);
+  };
+
+  // Global socket for notifications (separate from messages page socket)
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token || !authState.user?.userId?._id) return;
+
+    const socketUrl = BASE_URL.replace(/\/$/, "");
+    const sock = io(socketUrl, { transports: ["polling", "websocket"] });
+    socketRef.current = sock;
+
+    sock.on("connect", () => {
+      sock.emit("register", authState.user.userId._id);
+    });
+
+    // New message notification
+    sock.on("newMessage", (msg) => {
+      if (!router.pathname.includes("/messages")) {
+        setMsgBadge((n) => n + 1);
+        showToast(`💬 New message received`, "message", "💬");
+      }
+    });
+
+    // New connection request notification
+    sock.on("newConnectionRequest", ({ from }) => {
+      setConnBadge((n) => n + 1);
+      showToast(`🤝 ${from.name} ne connection request bheji!`, "connection", "🤝");
+      // Refresh connections list
+      dispatch(getMyConnectionsRequests({ token }));
+    });
+
+    return () => { sock.disconnect(); };
+  }, [authState.user?.userId?._id]);
+
+  // Clear message badge when navigating to messages
+  useEffect(() => {
+    if (router.pathname.includes("/messages")) setMsgBadge(0);
+    if (router.pathname.includes("/my_connections")) setConnBadge(0);
+  }, [router.pathname]);
   useEffect(() => {
     if (localStorage.getItem("token") === null) {
       router.push("/login");
     } else {
       dispatch(setTokenIsThere());
-      // Fetch all user profiles for top profiles section
-      if (!authState.allUsersFetched) {
-        dispatch(getAllUserProfiles());
-      }
-      // Always refresh connections so status is accurate app-wide
+      if (!authState.allUsersFetched) dispatch(getAllUserProfiles());
       const token = localStorage.getItem("token");
       if (token) {
         dispatch(getConnectionsRequest({ token }));
@@ -32,8 +78,18 @@ const DashboardLayout = ({ children }) => {
       }
     }
   }, [router, dispatch, authState.allUsersFetched]);
+
   return (
     <div className={styles.Container}>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={styles.toast} onClick={() => setToast(null)}>
+          <span className={styles.toastIcon}>{toast.icon}</span>
+          <span className={styles.toastMsg}>{toast.msg}</span>
+          <span className={styles.toastClose}>✕</span>
+        </div>
+      )}
       <div className={styles.homeContainer}>
         {/* LEFT SIDEBAR */}
         <div className={styles.leftSidebar}>
@@ -86,47 +142,25 @@ const DashboardLayout = ({ children }) => {
               </a>
             </Link>
 
-            {/* My Connections */}
+            {/* My Connections with badge */}
             <Link href="/my_connections" legacyBehavior>
-              <a className={styles.sideBarOption}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 6a3.75 3.75 0 1 1-7.5 
-                    0 3.75 3.75 0 0 1 7.5 0ZM4.501 
-                    20.118a7.5 7.5 0 0 1 14.998 
-                    0A17.933 17.933 0 0 1 12 
-                    21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                  />
+              <a className={styles.sideBarOption} style={{ position: "relative" }}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
                 <p>My Connections</p>
+                {connBadge > 0 && <span className={styles.navBadge}>{connBadge}</span>}
               </a>
             </Link>
 
-            {/* Messages */}
+            {/* Messages with badge */}
             <Link href="/messages" legacyBehavior>
-              <a className={styles.sideBarOption}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
-                  />
+              <a className={styles.sideBarOption} style={{ position: "relative" }}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
                 </svg>
                 <p>Messages</p>
+                {msgBadge > 0 && <span className={styles.navBadge}>{msgBadge}</span>}
               </a>
             </Link>
           </div>
