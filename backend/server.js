@@ -9,6 +9,7 @@ import userRoutes from "./routes/user.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import { saveMessage } from "./controllers/message.controller.js";
 import Message from "./models/message.model.js";
+import { setIo, setOnlineUsers, getOnlineUsers } from "./socket.service.js";
 
 dotenv.config();
 const app = express();
@@ -31,6 +32,8 @@ app.use(express.static("uploads"));
 
 // Online users: userId -> socketId
 const onlineUsers = new Map();
+setIo(io);
+setOnlineUsers(onlineUsers);
 
 io.on("connection", (socket) => {
   // User registers their userId when they connect
