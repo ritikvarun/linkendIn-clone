@@ -8,6 +8,7 @@ import postRoutes from "./routes/posts.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import { saveMessage } from "./controllers/message.controller.js";
+import Message from "./models/message.model.js";
 
 dotenv.config();
 const app = express();
@@ -69,6 +70,28 @@ io.on("connection", (socket) => {
     const receiverSocketId = onlineUsers.get(receiverId);
     if (receiverSocketId && socket.data.userId) {
       io.to(receiverSocketId).emit("stopTyping", { senderId: socket.data.userId });
+    }
+  });
+
+  // Mark messages as seen
+  socket.on("markSeen", async ({ senderId }) => {
+    try {
+      const myId = socket.data.userId;
+      if (!myId || !senderId) return;
+
+      // Mark all messages from senderId to me as seen
+      await Message.updateMany(
+        { senderId, receiverId: myId, seen: false },
+        { $set: { seen: true } }
+      );
+
+      // Notify the sender that their messages were seen
+      const senderSocketId = onlineUsers.get(senderId);
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("messagesSeen", { by: myId });
+      }
+    } catch (err) {
+      console.error("[Socket] markSeen error:", err.message);
     }
   });
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
 import UserLayout from "@/layout/UserLayout";
 import DashboardLayout from "@/layout/DashboardLayout";
 import {
@@ -21,6 +22,7 @@ let typingTimer;
 
 const MessagesPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const authState = useSelector((state) => state.auth);
 
   const [selectedUser, setSelectedUser] = useState(null);
@@ -29,17 +31,27 @@ const MessagesPage = () => {
   const [input, setInput] = useState("");
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false); // other person is typing
+  const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef(null);
-  const selectedUserRef = useRef(null); // keep latest selectedUser for socket handler
+  const selectedUserRef = useRef(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const myUserId = authState.user?.userId?._id;
 
-  // Keep selectedUserRef in sync
+  useEffect(() => { selectedUserRef.current = selectedUser; }, [selectedUser]);
+
+  // Auto-open chat from URL params (coming from view_profile Message button)
   useEffect(() => {
-    selectedUserRef.current = selectedUser;
-  }, [selectedUser]);
+    const { userId, name, username, pic } = router.query;
+    if (userId && name) {
+      setSelectedUser({
+        _id: userId,
+        name: decodeURIComponent(name),
+        username: username || "",
+        profilePicture: pic ? decodeURIComponent(pic) : "default.jpg",
+      });
+    }
+  }, [router.query]);
 
   // Fetch connections on mount
   useEffect(() => {
@@ -50,17 +62,12 @@ const MessagesPage = () => {
 
   // Build connected users list — filter out self
   useEffect(() => {
-    const incoming = (authState.connectionRequest || []).filter(
-      (c) => c.status_accepted === true
-    );
-    const outgoing = (authState.connections || []).filter(
-      (c) => c.status_accepted === true
-    );
+    const incoming = (authState.connectionRequest || []).filter((c) => c.status_accepted === true);
+    const outgoing = (authState.connections || []).filter((c) => c.status_accepted === true);
 
     const map = new Map();
     [...incoming, ...outgoing].forEach((item) => {
       const other = (item.userId && item.userId.name) ? item.userId : item.connectionId;
-      // Filter out self
       if (other && other._id && !map.has(other._id) && String(other._id) !== String(myUserId)) {
         map.set(other._id, other);
       }
@@ -73,9 +80,7 @@ const MessagesPage = () => {
     if (!token) return;
 
     const socketUrl = BASE_URL.replace(/\/$/, "");
-    socket = io(socketUrl, {
-      transports: ["polling", "websocket"],
-    });
+    socket = io(socketUrl, { transports: ["polling", "websocket"] });
 
     socket.on("connect", () => {
       if (myUserId) {
@@ -84,24 +89,33 @@ const MessagesPage = () => {
       }
     });
 
-    // Real message from server (for receiver)
     socket.on("newMessage", (msg) => {
-      // Only show if it's from the currently open chat
       setMessages((prev) => {
         if (prev.find((m) => m._id === msg._id)) return prev;
         return [...prev, msg];
       });
       setIsTyping(false);
+      // Mark seen if this chat is currently open
+      if (selectedUserRef.current && String(msg.senderId) === String(selectedUserRef.current._id)) {
+        socket.emit("markSeen", { senderId: msg.senderId });
+      }
     });
 
-    // Sender gets confirmation with real _id — replace optimistic message
     socket.on("messageSaved", (msg) => {
       setMessages((prev) =>
         prev.map((m) => (m._tempId && m.message === msg.message ? { ...msg } : m))
       );
     });
 
-    // Typing events
+    // Other person saw our messages — update seen status
+    socket.on("messagesSeen", ({ by }) => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          String(m.receiverId) === String(by) ? { ...m, seen: true } : m
+        )
+      );
+    });
+
     socket.on("typing", ({ senderId }) => {
       if (selectedUserRef.current && String(senderId) === String(selectedUserRef.current._id)) {
         setIsTyping(true);
@@ -114,9 +128,7 @@ const MessagesPage = () => {
       }
     });
 
-    return () => {
-      socket.disconnect();
-    };
+    return () => { socket.disconnect(); };
   }, [token, myUserId]);
 
   // Re-register if userId loads after socket connect
@@ -127,7 +139,7 @@ const MessagesPage = () => {
     }
   }, [myUserId]);
 
-  // Fetch chat history when user selected
+  // Fetch chat history when user selected + mark seen
   useEffect(() => {
     if (!selectedUser || !token) return;
     setIsLoading(true);
@@ -137,17 +149,21 @@ const MessagesPage = () => {
       .then((res) => {
         setMessages(res.data.messages || []);
         if (res.data.myId) setMyId(res.data.myId);
+        // Mark all their messages as seen
+        if (socket && socket.connected) {
+          socket.emit("markSeen", { senderId: selectedUser._id });
+        }
       })
       .catch(() => setMessages([]))
       .finally(() => setIsLoading(false));
   }, [selectedUser]);
 
-  // Auto scroll to bottom
+  // Auto scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  // Send message — OPTIMISTIC (show instantly, confirm later)
+  // Send message — optimistic
   const sendMessage = useCallback(() => {
     if (!input.trim() || !selectedUser || !socket) return;
 
@@ -159,49 +175,40 @@ const MessagesPage = () => {
       receiverId: selectedUser._id,
       message: input.trim(),
       createdAt: new Date().toISOString(),
+      seen: false,
     };
 
-    // Show instantly
     setMessages((prev) => [...prev, optimisticMsg]);
 
-    // Send via socket
-    socket.emit("sendMessage", {
-      token,
-      receiverId: selectedUser._id,
-      message: input.trim(),
-    });
-
-    // Stop typing indicator on other side
+    socket.emit("sendMessage", { token, receiverId: selectedUser._id, message: input.trim() });
     socket.emit("stopTyping", { receiverId: selectedUser._id });
-
     setInput("");
   }, [input, selectedUser, myId, token]);
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   };
 
-  // Typing indicator — emit with debounce
   const handleInputChange = (e) => {
     setInput(e.target.value);
     if (!socket || !selectedUser) return;
-
     socket.emit("typing", { receiverId: selectedUser._id });
-
     clearTimeout(typingTimer);
     typingTimer = setTimeout(() => {
       socket.emit("stopTyping", { receiverId: selectedUser._id });
-    }, 1500); // stop after 1.5s
+    }, 1500);
   };
+
+  // Last sent message for "Seen" indicator
+  const lastSentMsgId = [...messages].reverse().find(
+    (m) => String(m.senderId) === String(myId)
+  )?._id;
 
   return (
     <UserLayout>
       <DashboardLayout>
         <div className={styles.container}>
-          {/* Left Panel - Connections List */}
+          {/* Left Sidebar */}
           <div className={styles.sidebar}>
             <div className={styles.sidebarHeader}>
               <h2 className={styles.sidebarTitle}>Messages</h2>
@@ -218,17 +225,11 @@ const MessagesPage = () => {
               {connectedUsers.map((user) => (
                 <div
                   key={user._id}
-                  className={`${styles.userItem} ${
-                    selectedUser?._id === user._id ? styles.userItemActive : ""
-                  }`}
+                  className={`${styles.userItem} ${selectedUser?._id === user._id ? styles.userItemActive : ""}`}
                   onClick={() => setSelectedUser(user)}
                 >
                   <div className={styles.avatarWrapper}>
-                    <img
-                      src={getImageUrl(user.profilePicture)}
-                      alt={user.name}
-                      className={styles.avatar}
-                    />
+                    <img src={getImageUrl(user.profilePicture)} alt={user.name} className={styles.avatar} />
                     <span className={styles.onlineDot} />
                   </div>
                   <div className={styles.userInfo}>
@@ -240,7 +241,7 @@ const MessagesPage = () => {
             </div>
           </div>
 
-          {/* Right Panel - Chat Window */}
+          {/* Chat Panel */}
           <div className={styles.chatPanel}>
             {!selectedUser ? (
               <div className={styles.noChatSelected}>
@@ -253,11 +254,7 @@ const MessagesPage = () => {
                 {/* Chat Header */}
                 <div className={styles.chatHeader}>
                   <div className={styles.chatHeaderLeft}>
-                    <img
-                      src={getImageUrl(selectedUser.profilePicture)}
-                      alt={selectedUser.name}
-                      className={styles.chatAvatar}
-                    />
+                    <img src={getImageUrl(selectedUser.profilePicture)} alt={selectedUser.name} className={styles.chatAvatar} />
                     <div>
                       <p className={styles.chatUserName}>{selectedUser.name}</p>
                       <p className={styles.chatUserStatus}>
@@ -269,9 +266,7 @@ const MessagesPage = () => {
 
                 {/* Messages */}
                 <div className={styles.messagesArea}>
-                  {isLoading && (
-                    <div className={styles.loadingMessages}>Loading messages...</div>
-                  )}
+                  {isLoading && <div className={styles.loadingMessages}>Loading messages...</div>}
                   {!isLoading && messages.length === 0 && (
                     <div className={styles.noMessages}>
                       <p>👋 {selectedUser.name} ko pehla message bhejo!</p>
@@ -280,27 +275,31 @@ const MessagesPage = () => {
                   {messages.map((msg, i) => {
                     const isMine = String(msg.senderId) === String(myId);
                     const isPending = !!msg._tempId;
+                    const isLastMine = isMine && msg._id === lastSentMsgId;
                     return (
                       <div
                         key={msg._id || i}
-                        className={`${styles.messageBubbleWrapper} ${
-                          isMine ? styles.myMessage : styles.theirMessage
-                        }`}
+                        className={`${styles.messageBubbleWrapper} ${isMine ? styles.myMessage : styles.theirMessage}`}
                       >
                         <div className={`${styles.messageBubble} ${isPending ? styles.pending : ""}`}>
                           <p className={styles.messageText}>{msg.message}</p>
-                          <span className={styles.messageTime}>
-                            {isPending ? "sending..." : new Date(msg.createdAt).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
+                          <div className={styles.messageMeta}>
+                            <span className={styles.messageTime}>
+                              {isPending ? "sending..." : new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                            {/* Seen indicator — only on last sent message */}
+                            {isMine && isLastMine && !isPending && (
+                              <span className={`${styles.seenTick} ${msg.seen ? styles.seenBlue : ""}`}>
+                                {msg.seen ? "✓✓ Seen" : "✓✓"}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
                   })}
 
-                  {/* Typing indicator bubbles */}
+                  {/* Typing bubble */}
                   {isTyping && (
                     <div className={`${styles.messageBubbleWrapper} ${styles.theirMessage}`}>
                       <div className={styles.typingBubble}>
@@ -310,11 +309,10 @@ const MessagesPage = () => {
                       </div>
                     </div>
                   )}
-
                   <div ref={bottomRef} />
                 </div>
 
-                {/* Input Box */}
+                {/* Input */}
                 <div className={styles.inputArea}>
                   <textarea
                     className={styles.messageInput}
@@ -324,17 +322,8 @@ const MessagesPage = () => {
                     onKeyDown={handleKeyDown}
                     rows={1}
                   />
-                  <button
-                    className={styles.sendButton}
-                    onClick={sendMessage}
-                    disabled={!input.trim()}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className={styles.sendIcon}
-                    >
+                  <button className={styles.sendButton} onClick={sendMessage} disabled={!input.trim()}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={styles.sendIcon}>
                       <path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z" />
                     </svg>
                   </button>
