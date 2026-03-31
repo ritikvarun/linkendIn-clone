@@ -226,6 +226,9 @@ export const whatAreMyConnection = async (req, res) => {
   const { token } = req.query;
   try {
     const user = await User.findOne({ token });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const connections = await ConnectionRequest.find({
       connectionId: user._id,
     }).populate("userId", "name username email profilePicture");
@@ -255,7 +258,7 @@ export const acceptConnectionRequest = async (req, res) => {
     await connection.save();
     return res.json({ message: "Request Updated" });
   } catch (error) {
-    return res.status.json(500)({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
