@@ -35,6 +35,7 @@ io.on("connection", (socket) => {
   // User registers their userId when they connect
   socket.on("register", (userId) => {
     onlineUsers.set(userId, socket.id);
+    socket.data.userId = userId; // store for later use
     console.log(`[Socket] User ${userId} connected`);
   });
 
@@ -44,21 +45,34 @@ io.on("connection", (socket) => {
       const saved = await saveMessage({ token, receiverId, message });
       if (!saved) return;
 
-      // Send to sender (confirmation)
-      socket.emit("newMessage", saved);
-
       // Send to receiver if they are online
       const receiverSocketId = onlineUsers.get(receiverId);
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", saved);
       }
+      // Echo back to sender with saved data (has real _id)
+      socket.emit("messageSaved", saved);
     } catch (err) {
       console.error("[Socket] sendMessage error:", err.message);
     }
   });
 
+  // Typing indicator
+  socket.on("typing", ({ receiverId }) => {
+    const receiverSocketId = onlineUsers.get(receiverId);
+    if (receiverSocketId && socket.data.userId) {
+      io.to(receiverSocketId).emit("typing", { senderId: socket.data.userId });
+    }
+  });
+
+  socket.on("stopTyping", ({ receiverId }) => {
+    const receiverSocketId = onlineUsers.get(receiverId);
+    if (receiverSocketId && socket.data.userId) {
+      io.to(receiverSocketId).emit("stopTyping", { senderId: socket.data.userId });
+    }
+  });
+
   socket.on("disconnect", () => {
-    // Remove user from online map
     for (const [userId, socketId] of onlineUsers.entries()) {
       if (socketId === socket.id) {
         onlineUsers.delete(userId);
