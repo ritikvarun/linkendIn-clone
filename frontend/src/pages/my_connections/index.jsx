@@ -51,7 +51,9 @@ const MyConnectionPage = () => {
   // Merge and deduplicate by the other user's id
   const mergedAcceptedMap = new Map();
   [...acceptedIncoming, ...acceptedOutgoing].forEach((item) => {
-    const other = item.userId || item.connectionId; // normalize
+    // acceptedIncoming: userId = other person (populated), connectionId = me
+    // acceptedOutgoing: connectionId = other person (populated), userId = raw ObjectId
+    const other = (item.userId && item.userId.name) ? item.userId : item.connectionId;
     if (other && other._id && !mergedAcceptedMap.has(other._id)) {
       mergedAcceptedMap.set(other._id, item);
     }
