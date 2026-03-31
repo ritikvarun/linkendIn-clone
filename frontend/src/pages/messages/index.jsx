@@ -107,23 +107,27 @@ const MessagesPage = () => {
   useEffect(() => {
     if (!token) return;
     const socketUrl = BASE_URL.replace(/\/$/, "");
-    socket = io(socketUrl, { transports: ["polling", "websocket"] });
-
-    socket.on("connect", () => {
-      if (myUserId) { socket.emit("register", myUserId); setMyId(myUserId); }
+    socket = io(socketUrl, {
+      transports: ["polling", "websocket"],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
     });
+
+    const register = () => {
+      if (myUserId) { socket.emit("register", myUserId); setMyId(myUserId); }
+    };
+
+    socket.on("connect", register);
+    socket.on("reconnect", register); // re-register after reconnect
 
     socket.on("newMessage", (msg) => {
       const currentChat = selectedUserRef.current;
       const senderId = String(msg.senderId);
-
-      // Update lastMsg preview in sidebar
       setLastMsg((prev) => ({
         ...prev,
         [senderId]: { text: msg.message, time: msg.createdAt, isMine: false },
       }));
-
-      // If this chat is open — show message, mark seen
       if (currentChat && senderId === String(currentChat._id)) {
         setMessages((prev) => {
           if (prev.find((m) => m._id === msg._id)) return prev;
@@ -132,7 +136,6 @@ const MessagesPage = () => {
         setIsTyping(false);
         socket.emit("markSeen", { senderId: msg.senderId });
       } else {
-        // Not open — increment unread badge
         setUnread((prev) => ({ ...prev, [senderId]: (prev[senderId] || 0) + 1 }));
       }
     });
@@ -141,7 +144,6 @@ const MessagesPage = () => {
       setMessages((prev) =>
         prev.map((m) => (m._tempId && m.message === msg.message ? { ...msg } : m))
       );
-      // Update lastMsg for sent
       const recvId = String(msg.receiverId);
       setLastMsg((prev) => ({
         ...prev,
@@ -162,8 +164,15 @@ const MessagesPage = () => {
       if (selectedUserRef.current && String(senderId) === String(selectedUserRef.current._id)) setIsTyping(false);
     });
 
-    return () => { socket.disconnect(); };
+    // Polling fallback — refresh inbox every 30s in case socket misses events
+    const pollTimer = setInterval(() => fetchInbox(), 30000);
+
+    return () => {
+      socket.disconnect();
+      clearInterval(pollTimer);
+    };
   }, [token, myUserId]);
+
 
   useEffect(() => {
     if (socket && socket.connected && myUserId) { socket.emit("register", myUserId); setMyId(myUserId); }
