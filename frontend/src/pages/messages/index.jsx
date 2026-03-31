@@ -50,7 +50,8 @@ const MessagesPage = () => {
 
     const map = new Map();
     [...incoming, ...outgoing].forEach((item) => {
-      const other = item.userId || item.connectionId;
+      // incoming: userId = other person (populated), outgoing: connectionId = other person
+      const other = (item.userId && item.userId.name) ? item.userId : item.connectionId;
       if (other && other._id && !map.has(other._id)) {
         map.set(other._id, other);
       }
@@ -62,10 +63,13 @@ const MessagesPage = () => {
   useEffect(() => {
     if (!token) return;
 
-    socket = io(BASE_URL, { transports: ["websocket"] });
+    // Remove trailing slash for socket.io
+    const socketUrl = BASE_URL.replace(/\/$/, "");
+    socket = io(socketUrl, {
+      transports: ["polling", "websocket"], // polling first — works on Render free tier
+    });
 
     socket.on("connect", () => {
-      // Register with my userId
       if (authState.user?.userId?._id) {
         socket.emit("register", authState.user.userId._id);
         setMyId(authState.user.userId._id);
@@ -74,7 +78,6 @@ const MessagesPage = () => {
 
     socket.on("newMessage", (msg) => {
       setMessages((prev) => {
-        // Avoid duplicates
         if (prev.find((m) => m._id === msg._id)) return prev;
         return [...prev, msg];
       });
@@ -84,6 +87,14 @@ const MessagesPage = () => {
       socket.disconnect();
     };
   }, [token, authState.user?.userId?._id]);
+
+  // Re-register if socket already connected but userId just loaded
+  useEffect(() => {
+    if (socket && socket.connected && authState.user?.userId?._id) {
+      socket.emit("register", authState.user.userId._id);
+      setMyId(authState.user.userId._id);
+    }
+  }, [authState.user?.userId?._id]);
 
   // Fetch chat history when user selected
   useEffect(() => {
