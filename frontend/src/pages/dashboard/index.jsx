@@ -15,6 +15,13 @@ import DashboardLayout from "@/layout/DashboardLayout";
 import styles from "./style.module.css";
 import { BASE_URL } from "@/config";
 import { resetPostId } from "@/config/redux/reducer/postReducer";
+
+// Helper: handles both old local paths and new Cloudinary full URLs
+const getImageUrl = (path) => {
+  if (!path || path === "default.jpg") return "/default.jpg";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${BASE_URL}/${path}`;
+};
 const index = () => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -50,7 +57,7 @@ const index = () => {
               <img
                 className={styles.userProfile}
                 width={100}
-                src={`${BASE_URL}/${authState.user.userId?.profilePicture}`}
+                src={getImageUrl(authState.user.userId?.profilePicture)}
                 alt="profilePicture"
               />
               <textarea
@@ -97,7 +104,7 @@ const index = () => {
                   <div className={styles.singleCard_ProfileContainer}>
                     <img
                       className={styles.userProfile}
-                      src={`${BASE_URL}/${post.userId?.profilePicture}`}
+                      src={getImageUrl(post.userId?.profilePicture)}
                       alt="profilePicture"
                     />
                     <div className={styles.postHeaderInfo}>
@@ -135,7 +142,7 @@ const index = () => {
                       {post?.media ? (
                         <div className={styles.singleCard_Image}>
                           <img
-                            src={`${BASE_URL}/${post.media}`}
+                            src={getImageUrl(post.media)}
                             alt="post media"
                             className={styles.postMediaImage}
                           />
@@ -251,7 +258,7 @@ const index = () => {
               <div className={styles.commentInputSection}>
                 <img
                   className={styles.commentUserProfile}
-                  src={`${BASE_URL}/${authState.user.userId?.profilePicture}`}
+                  src={getImageUrl(authState.user.userId?.profilePicture)}
                   alt="profilePicture"
                 />
                 <div className={styles.commentInputWrapper}>
@@ -289,9 +296,7 @@ const index = () => {
                     <div key={index} className={styles.singleComment}>
                       <img
                         className={styles.commentUserProfile}
-                        src={`${BASE_URL}/${
-                          comment.userId?.profilePicture || "default.jpg"
-                        }`}
+                        src={getImageUrl(comment.userId?.profilePicture || "default.jpg")}
                         alt="profilePicture"
                       />
                       <div className={styles.commentContent}>

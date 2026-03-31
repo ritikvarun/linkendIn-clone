@@ -11,6 +11,13 @@ import style from "./style.module.css";
 import { BASE_URL } from "@/config";
 import { useRouter } from "next/router";
 
+// Helper: handles both old local paths and new Cloudinary full URLs
+const getImageUrl = (path) => {
+  if (!path || path === "default.jpg") return "/default.jpg";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${BASE_URL}/${path}`;
+};
+
 
 const MyConnectionPage = () => {
   const dispatch = useDispatch();
@@ -72,7 +79,7 @@ const MyConnectionPage = () => {
                     <div className={style.profilePicture}>
                       <img
                         className={style.profileImage}
-                        src={`${BASE_URL}/${user.userId.profilePicture}`}
+                        src={getImageUrl(user.userId.profilePicture)}
                         alt="connectionImage"
                       />
                     </div>
@@ -114,7 +121,7 @@ const MyConnectionPage = () => {
                     <div className={style.profilePicture}>
                       <img
                         className={style.profileImage}
-                        src={`${BASE_URL}/${displayUser.profilePicture}`}
+                        src={getImageUrl(displayUser.profilePicture)}
                         alt="connectionImage"
                       />
                     </div>

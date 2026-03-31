@@ -7,6 +7,13 @@ import { BASE_URL } from "@/config";
 import styles from "./style.module.css";
 import { useRouter } from "next/router";
 
+// Helper: handles both old local paths and new Cloudinary full URLs
+const getImageUrl = (path) => {
+  if (!path || path === "default.jpg") return "/default.jpg";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${BASE_URL}/${path}`;
+};
+
 const Discoverpage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -49,9 +56,7 @@ const Discoverpage = () => {
                       {/* Profile Picture */}
                       <div className={styles.profileImageContainer}>
                         <img
-                          src={`${BASE_URL}/${
-                            profile.userId?.profilePicture || "default.jpg"
-                          }`}
+                          src={getImageUrl(profile.userId?.profilePicture || "default.jpg")}
                           alt={profile.userId?.name}
                           className={styles.profileImage}
                         />

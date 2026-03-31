@@ -8,6 +8,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllPosts } from "@/config/redux/action/postAction";
 import { sendConnectionRequest } from "@/config/redux/action/authAction";
 
+// Helper: handles both old local paths and new Cloudinary full URLs
+const getImageUrl = (path) => {
+  if (!path || path === "default.jpg") return "/default.jpg";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${BASE_URL}/${path}`;
+};
+
 const ViewProfilePage = ({ userProfile }) => {
   const router = useRouter();
   const postState = useSelector((state) => state.postReducer);
@@ -94,9 +101,7 @@ const ViewProfilePage = ({ userProfile }) => {
             <div className={style.backDropContainer}>
               <img
                 className={style.backDrop}
-                src={`${BASE_URL}/${
-                  userProfile?.userId?.profilePicture || "default.jpg"
-                }`}
+                src={getImageUrl(userProfile?.userId?.profilePicture || "default.jpg")}
                 alt="profile"
               />
             </div>
@@ -180,7 +185,7 @@ const ViewProfilePage = ({ userProfile }) => {
                             <div className={style.card_profileContainer}>
                               <img
                                 className={style.postThumb}
-                                src={`${BASE_URL}/${post.media}`}
+                                src={getImageUrl(post.media)}
                                 alt="image"
                               />
                             </div>

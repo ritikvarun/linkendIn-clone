@@ -4,6 +4,13 @@ import React, { use, useEffect, useState } from "react";
 import style from "./style.module.css";
 import clintServer, { BASE_URL } from "@/config";
 import { useDispatch, useSelector } from "react-redux";
+
+// Helper: handles both old local paths and new Cloudinary full URLs
+const getImageUrl = (path) => {
+  if (!path || path === "default.jpg") return "/default.jpg";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${BASE_URL}/${path}`;
+};
 import { getAboutUser } from "@/config/redux/action/authAction";
 import { getAllPosts } from "@/config/redux/action/postAction";
 
@@ -101,9 +108,7 @@ const index = () => {
               />
               <img
                 className={style.profileImage}
-                src={`${BASE_URL}/${
-                  userProfile?.userId?.profilePicture || "default.jpg"
-                }`}
+                src={getImageUrl(userProfile?.userId?.profilePicture || "default.jpg")}
                 alt="profile"
               />
             </div>
@@ -158,7 +163,7 @@ const index = () => {
                             <div className={style.card_profileContainer}>
                               <img
                                 className={style.postThumb}
-                                src={`${BASE_URL}/${post.media}`}
+                                src={getImageUrl(post.media)}
                                 alt="image"
                               />
                             </div>
