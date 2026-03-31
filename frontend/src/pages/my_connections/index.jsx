@@ -54,7 +54,9 @@ const MyConnectionPage = () => {
     // acceptedIncoming: userId = other person (populated), connectionId = me
     // acceptedOutgoing: connectionId = other person (populated), userId = raw ObjectId
     const other = (item.userId && item.userId.name) ? item.userId : item.connectionId;
-    if (other && other._id && !mergedAcceptedMap.has(other._id)) {
+    const myCurrentId = authState.user?.userId?._id;
+    // Filter out self
+    if (other && other._id && !mergedAcceptedMap.has(other._id) && String(other._id) !== String(myCurrentId)) {
       mergedAcceptedMap.set(other._id, item);
     }
   });
