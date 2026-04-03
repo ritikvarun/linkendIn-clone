@@ -92,11 +92,13 @@ const index = () => {
                 hidden
                 id="fileUpload"
               />
-              {postContent.length > 0 && (
-                <button onClick={handleUpload} className={styles.uploadButton}>
-                  Post
-                </button>
-              )}
+              <button 
+                onClick={handleUpload} 
+                className={styles.uploadButton}
+                disabled={postContent.trim().length === 0}
+              >
+                Post
+              </button>
             </div>
             <div className={styles.postsContainer}>
               {postState.posts.map((post) => (

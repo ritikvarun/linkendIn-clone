@@ -84,9 +84,6 @@
 }
 
 .uploadButton {
-  position: absolute;
-  right: 1.5rem;
-  bottom: -45px;
   padding: 0.6rem 1.5rem;
   background-color: #0077b5;
   color: white;
@@ -98,11 +95,20 @@
   font-size: 0.95rem;
   transition: all 0.2s ease;
   box-shadow: 0 4px 10px rgba(0, 119, 181, 0.2);
+  flex-shrink: 0;
 }
 
-.uploadButton:hover {
+.uploadButton:hover:not(:disabled) {
   background-color: #004182;
   transform: translateY(-2px);
+}
+
+.uploadButton:disabled {
+  background-color: #e1e8ed;
+  color: #a0aec0;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .postsContainer {
