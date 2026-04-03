@@ -10,11 +10,46 @@
 .backDropContainer {
   width: 100%;
   height: 240px;
-  background: url("https://images.pexels.com/photos/906150/pexels-photo-906150.jpeg");
-  background-size: cover;
-  background-position: center;
+  background-color: #f1f1f1;
   border-radius: 12px 12px 0 0;
   position: relative;
+  overflow: visible; /* Need avatar to spill out */
+  position: relative;
+}
+
+.backDropImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
+.backDrop_editBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #0077b5;
+  transition: all 0.2s;
+  z-index: 5;
+}
+
+.backDrop_editBtn:hover {
+  background-color: #f8fafc;
+  transform: scale(1.05);
+}
+
+.backDrop_editBtn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .profileImage {

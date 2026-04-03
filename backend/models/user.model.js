@@ -27,6 +27,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "default.jpg",
   },
+  backgroundPicture: {
+    type: String,
+    // Provide a default beautiful background banner
+    default: "https://images.pexels.com/photos/906150/pexels-photo-906150.jpeg",
+  },
   createAt: {
     type: Date,
     default: Date.now,

@@ -94,6 +94,21 @@ export const uploadProfilePicture = async (req, res) => {
   }
 };
 
+export const updateBackgroundPicture = async (req, res) => {
+  const { token } = req.body;
+  try {
+    const user = await User.findOne({ token: token });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.backgroundPicture = req.file.path;
+    await user.save();
+    return res.json({ message: "background Picture Updated" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export const updateUserProfile = async (req, res) => {
   try {
     const { token, ...newUserData } = req.body;
@@ -125,7 +140,7 @@ export const getUserAndProfile = async (req, res) => {
     }
     const userProfile = await Profile.findOne({ userId: user._id }).populate(
       "userId",
-      "name email username profilePicture"
+      "name email username profilePicture backgroundPicture"
     );
     return res.json(userProfile);
   } catch (error) {
@@ -155,7 +170,7 @@ export const getUserProfile = async (req, res) => {
   try {
     const profiles = await Profile.find({ userId: { $ne: null } }).populate(
       "userId",
-      "name username email profilePicture"
+      "name username email profilePicture backgroundPicture"
     );
     return res.json({ profiles });
   } catch (error) {
@@ -168,7 +183,7 @@ export const downloadProfile = async (req, res) => {
 
   const userProfile = await Profile({ userId: user_id }).populate(
     "userId",
-    "name username email profilePicture"
+    "name username email profilePicture backgroundPicture"
   );
   let outputPath = await convertUserDataTOPDF(userProfile);
   return res.json({ message: outputPath });
@@ -221,7 +236,7 @@ export const getMyConnectionsRequests = async (req, res) => {
     }
     const connections = await ConnectionRequest.find({
       userId: user._id,
-    }).populate("connectionId", "name username email profilePicture");
+    }).populate("connectionId", "name username email profilePicture backgroundPicture");
     return res.json({ connections });
   } catch (error) {
     return res.status(500).json({ message: error.message });

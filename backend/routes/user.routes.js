@@ -11,7 +11,7 @@ import {
   whatAreMyConnection,
   acceptConnectionRequest,
 } from "../controllers/user.controller.js";
-import { uploadProfilePicture } from "../controllers/user.controller.js";
+import { uploadProfilePicture, updateBackgroundPicture } from "../controllers/user.controller.js";
 import { updateUserProfile } from "../controllers/user.controller.js";
 import multer from "multer";
 import { profilePictureStorage } from "../cloudinary.config.js";
@@ -22,6 +22,9 @@ const upload = multer({ storage: profilePictureStorage });
 router
   .route("/update_profile_picture")
   .post(upload.single("profile_picture"), uploadProfilePicture);
+router
+  .route("/update_background_picture")
+  .post(upload.single("background_picture"), updateBackgroundPicture);
 router.route("/register").post(register);
 router.route("/login").post(login);
 router.route("/user_update").post(updateUserProfile);

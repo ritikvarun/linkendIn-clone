@@ -74,6 +74,22 @@ const index = () => {
     dispatch(getAboutUser({ token: localStorage.getItem("token") }));
   };
 
+  const updateBackgroundPicture = async (file) => {
+    const formData = new FormData();
+    formData.append("background_picture", file);
+    formData.append("token", localStorage.getItem("token"));
+    const response = await clintServer.post(
+      "/update_background_picture",
+      formData,
+      {
+        header: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    dispatch(getAboutUser({ token: localStorage.getItem("token") }));
+  };
+
   const updateProfileData = async () => {
     const request = await clintServer.post("/user_update", {
       token: localStorage.getItem("token"),
@@ -94,6 +110,26 @@ const index = () => {
         {authState.user && userProfile?.userId && (
           <div className={style.container}>
             <div className={style.backDropContainer}>
+              <img
+                src={getImageUrl(userProfile?.userId?.backgroundPicture || "https://images.pexels.com/photos/906150/pexels-photo-906150.jpeg")}
+                alt="background"
+                className={style.backDropImage}
+              />
+              <label
+                htmlFor="backgroundPictureUpload"
+                className={style.backDrop_editBtn}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                </svg>
+              </label>
+              <input
+                onChange={(e) => updateBackgroundPicture(e.target.files[0])}
+                hidden
+                type="file"
+                id="backgroundPictureUpload"
+              />
+
               <label
                 htmlFor="profilePictureUpload"
                 className={style.backDrop_overlay}

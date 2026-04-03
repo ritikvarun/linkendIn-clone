@@ -59,6 +59,8 @@ const index = () => {
                 width={100}
                 src={getImageUrl(authState.user.userId?.profilePicture)}
                 alt="profilePicture"
+                onClick={() => router.push("/profile")}
+                style={{ cursor: "pointer", transition: "all 0.2s" }}
               />
               <textarea
                 onChange={(e) => setPostContent(e.target.value)}
