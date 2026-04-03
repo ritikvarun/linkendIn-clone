@@ -30,27 +30,34 @@ app.use(userRoutes);
 app.use(messageRoutes);
 app.use(express.static("uploads"));
 
-// Online users: userId -> socketId
+// Online users: userId (String) -> socketId
 const onlineUsers = new Map();
 setIo(io);
 setOnlineUsers(onlineUsers);
 
+const emitOnlineUsers = () => {
+  io.emit("getOnlineUsers", Array.from(onlineUsers.keys()));
+};
+
 io.on("connection", (socket) => {
   // User registers their userId when they connect
   socket.on("register", (userId) => {
-    onlineUsers.set(userId, socket.id);
-    socket.data.userId = userId; // store for later use
-    console.log(`[Socket] User ${userId} connected`);
+    const uId = String(userId);
+    onlineUsers.set(uId, socket.id);
+    socket.data.userId = uId; // store for later use
+    console.log(`[Socket] User ${uId} connected`);
+    emitOnlineUsers();
   });
 
   // Handle sending a message
   socket.on("sendMessage", async ({ token, receiverId, message }) => {
     try {
-      const saved = await saveMessage({ token, receiverId, message });
+      const recId = String(receiverId);
+      const saved = await saveMessage({ token, receiverId: recId, message });
       if (!saved) return;
 
       // Send to receiver if they are online
-      const receiverSocketId = onlineUsers.get(receiverId);
+      const receiverSocketId = onlineUsers.get(recId);
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", saved);
       }
@@ -63,14 +70,16 @@ io.on("connection", (socket) => {
 
   // Typing indicator
   socket.on("typing", ({ receiverId }) => {
-    const receiverSocketId = onlineUsers.get(receiverId);
+    const recId = String(receiverId);
+    const receiverSocketId = onlineUsers.get(recId);
     if (receiverSocketId && socket.data.userId) {
       io.to(receiverSocketId).emit("typing", { senderId: socket.data.userId });
     }
   });
 
   socket.on("stopTyping", ({ receiverId }) => {
-    const receiverSocketId = onlineUsers.get(receiverId);
+    const recId = String(receiverId);
+    const receiverSocketId = onlineUsers.get(recId);
     if (receiverSocketId && socket.data.userId) {
       io.to(receiverSocketId).emit("stopTyping", { senderId: socket.data.userId });
     }
@@ -103,6 +112,7 @@ io.on("connection", (socket) => {
       if (socketId === socket.id) {
         onlineUsers.delete(userId);
         console.log(`[Socket] User ${userId} disconnected`);
+        emitOnlineUsers();
         break;
       }
     }

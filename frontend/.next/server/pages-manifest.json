@@ -2,7 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/dashboard": "pages/dashboard.js",
-  "/my_connections": "pages/my_connections.js",
-  "/profile": "pages/profile.js"
+  "/login": "pages/login.js",
+  "/dashboard": "pages/dashboard.js"
 }

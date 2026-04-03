@@ -87,9 +87,9 @@ export const saveMessage = async ({ token, receiverId, message }) => {
   await newMessage.save();
 
   return {
-    _id: newMessage._id,
-    senderId: sender._id,
-    receiverId,
+    _id: newMessage._id.toString(),
+    senderId: sender._id.toString(),
+    receiverId: receiverId.toString(),
     message,
     createdAt: newMessage.createdAt,
   };

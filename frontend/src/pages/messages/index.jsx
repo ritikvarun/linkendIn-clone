@@ -40,6 +40,7 @@ const MessagesPage = () => {
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [activeUsers, setActiveUsers] = useState([]);
   // unread: { [userId]: count }
   const [unread, setUnread] = useState({});
   // lastMsg: { [userId]: { text, time, isMine } }
@@ -130,7 +131,7 @@ const MessagesPage = () => {
       }));
       if (currentChat && senderId === String(currentChat._id)) {
         setMessages((prev) => {
-          if (prev.find((m) => m._id === msg._id)) return prev;
+          if (prev.find((m) => String(m._id) === String(msg._id))) return prev;
           return [...prev, msg];
         });
         setIsTyping(false);
@@ -138,6 +139,10 @@ const MessagesPage = () => {
       } else {
         setUnread((prev) => ({ ...prev, [senderId]: (prev[senderId] || 0) + 1 }));
       }
+    });
+
+    socket.on("getOnlineUsers", (users) => {
+      setActiveUsers(users);
     });
 
     socket.on("messageSaved", (msg) => {
@@ -268,7 +273,7 @@ const MessagesPage = () => {
                   >
                     <div className={styles.avatarWrapper}>
                       <img src={getImageUrl(user.profilePicture)} alt={user.name} className={styles.avatar} />
-                      <span className={styles.onlineDot} />
+                      {activeUsers.includes(String(user._id)) && <span className={styles.onlineDot} />}
                     </div>
                     <div className={styles.userInfo}>
                       <div className={styles.userInfoTop}>
@@ -308,7 +313,9 @@ const MessagesPage = () => {
                   <img src={getImageUrl(selectedUser.profilePicture)} alt={selectedUser.name} className={styles.chatAvatar} />
                   <div>
                     <p className={styles.chatUserName}>{selectedUser.name}</p>
-                    <p className={styles.chatUserStatus}>{isTyping ? "✍️ typing..." : "● Online"}</p>
+                    <p className={styles.chatUserStatus}>
+                      {isTyping ? "✍️ typing..." : (activeUsers.includes(String(selectedUser._id)) ? "● Online" : "○ Offline")}
+                    </p>
                   </div>
                 </div>
 
