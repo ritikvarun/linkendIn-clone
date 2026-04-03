@@ -7,6 +7,15 @@ const Navbar = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
+
+  const [hasToken, setHasToken] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasToken(!!localStorage.getItem("token"));
+    }
+  }, [authState.isTokenThere]);
+
   return (
     <div className={style.container}>
       <div className={style.navBar}>
@@ -19,9 +28,11 @@ const Navbar = () => {
           Linkedin (WebApp)
         </h2>
         <div className={style.navBarOptionContainer}>
-          {authState.profileFetched && (
+          {hasToken ? (
             <div className={style.navLinks}>
-              <p className={style.welcomeText}>Hey, {authState.user?.userId?.name}</p>
+              <p className={style.welcomeText}>
+                Hey, {authState.user?.userId?.name || "User"}
+              </p>
               <p
                 onClick={() => {
                   router.push("/profile");
@@ -41,15 +52,14 @@ const Navbar = () => {
                 Logout
               </p>
             </div>
-          )}
-          {!authState.profileFetched && (
+          ) : (
             <div
               onClick={() => {
                 router.push("/login");
               }}
               className={style.buttonJoin}
             >
-              <p>Be a part</p>
+              <p>Join Now</p>
             </div>
           )}
         </div>
